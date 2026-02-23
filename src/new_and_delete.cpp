@@ -24,7 +24,7 @@ void newAndDelete() {
     // TODO: Use 'new' to allocate an array of 'size' ints on the heap
     //       Store the result in int* called 'heapArray'
     //       Hint: int* heapArray = new int[size];
-    //
+	int* heapArray = new int[size];
     // ! DISCUSSION: What does 'new int[size]' actually do?
     //   1. Asks the OS for (size * sizeof(int)) bytes of heap memory
     //   2. Returns a pointer to the first element of that block
@@ -45,13 +45,17 @@ void newAndDelete() {
 
     // TODO: Use a for loop to fill the array with values 10, 20, 30, 40, 50
     //       Hint: heapArray[i] = (i + 1) * 10;
-
+	for (int i = 0; i < size; ++i) {
+        heapArray[i] = (i + 1) * 10;
+    }
     // TODO: Print all elements of the heap array using a for loop
     // Expected output: "Heap array: 10 20 30 40 50"
     std::cout << "Heap array: ";
 
     // your loop here
-
+	for (int i = 0; i < size; ++i) {
+        std::cout << heapArray[i] << ' ';
+    }
     std::cout << '\n';
 
     // --- 2. Freeing arrays with delete[] ---
@@ -59,7 +63,7 @@ void newAndDelete() {
     std::cout << "\n--- 2. Freeing Arrays with delete[] ---" << '\n';
 
     // TODO: Use 'delete[]' to free the heap array
-    //
+	delete[] heapArray;
     // ! DISCUSSION: Why must we call delete[]?
     //   Unlike stack variables, heap memory is NOT automatically freed.
     //   If we lose the pointer without calling delete[], that memory is
@@ -76,17 +80,15 @@ void newAndDelete() {
     //   stores the count (usually just before the array in memory).
 
     // TODO: Set heapArray to nullptr after deleting
-    //
-    // ! DISCUSSION: Why set to nullptr after delete[]?
-    //   After delete[], the pointer still holds the old address — it's
-    //   now a "dangling pointer." Accessing *heapArray after delete[] is
-    //   undefined behavior. Setting it to nullptr makes the invalid
-    //   state visible:
-    //     if (heapArray != nullptr) { /* safe to use */ }
-    //   Deleting nullptr is guaranteed safe (it does nothing), so
-    //   accidental double-delete won't crash.
-
-    std::cout << "Array memory freed and pointer set to nullptr" << '\n';
+	heapArray = nullptr;
+    if (heapArray != nullptr) {
+		std::cout << "Heap array safe to use << '\n'";
+    }
+    else {
+		std::cout << "Heap array pointer is now nullptr — cannot use" << '\n';
+        std::cout << "Array memory freed and pointer set to nullptr" << '\n';
+    } 
+    
 
     // --- 3. Smart pointers: unique_ptr ---
     // ? SEE DIAGRAM: images/unique_ptr.png — shows exclusive ownership, make_unique, and automatic cleanup
@@ -116,7 +118,7 @@ void newAndDelete() {
     //        at this level — it's the foundation everything else sits on
 
     // TODO: Create a std::unique_ptr<int> called 'smartValue' using std::make_unique<int>(99)
-    //
+	auto smartValue = std::make_unique<int>(99);
     // ! DISCUSSION: What does 'auto' mean here?
     //   auto tells the compiler: "figure out the type for me."
     //   The right-hand side is std::make_unique<int>(99), which returns a
@@ -141,10 +143,11 @@ void newAndDelete() {
 
     // TODO: Print the value by dereferencing the unique_ptr (use * just like a raw pointer)
     // Expected output: "Smart value: 99"
+	std::cout << "Smart value: " << *smartValue << '\n';
 
     // TODO: Create a unique_ptr to a dynamic array of 3 ints
     //       Hint: auto smartArray = std::make_unique<int[]>(3);
-    //
+	auto smartArray = std::make_unique<int[]>(3);
     // ! DISCUSSION: unique_ptr with arrays
     //   std::make_unique<int[]>(3) allocates an array of 3 ints on the heap.
     //   The unique_ptr knows it's an array and will call delete[] (not delete)
@@ -152,13 +155,17 @@ void newAndDelete() {
 
     // TODO: Fill the smart array with values 100, 200, 300
     //       Hint: smartArray[0] = 100; etc.
-
+    for (int i = 0; i < 3; ++i) {
+        smartArray[i] = (i + 1) * 100;
+	}
     // TODO: Print all elements of the smart array
     // Expected output: "Smart array: 100 200 300"
     std::cout << "Smart array: ";
 
     // your loop here
-
+	for (int i = 0; i < 3; ++i) {
+        std::cout << smartArray[i] << ' ';
+    }
     std::cout << '\n';
 
     // ! DISCUSSION: Notice — no delete needed!
@@ -189,10 +196,10 @@ void newAndDelete() {
     //   ownership of the same object.
 
     // TODO: Create a shared_ptr<int> called 'sharedA' using std::make_shared<int>(77)
-
+	auto sharedA = std::make_shared<int>(77);
     // TODO: Create a second shared_ptr<int> called 'sharedB' that copies sharedA
     //       Hint: auto sharedB = sharedA;
-    //
+	auto sharedB = sharedA;
     // ! DISCUSSION: How does shared_ptr allow copies?
     //   shared_ptr keeps a reference count. When you copy it, the count
     //   goes up. When a copy is destroyed, the count goes down. The
@@ -208,5 +215,9 @@ void newAndDelete() {
     // Expected output: "Reference count: 2"
     //       Hint: use sharedA.use_count() for the reference count
 
+    std::cout << "sharedA value: " << *sharedA << '\n';
+    std::cout << "sharedB value: " << *sharedB << '\n';
+    std::cout << "Reference count: " << sharedA.use_count() << '\n';
+    
     std::cout << "Both pointers share the same heap memory!" << '\n';
 }
